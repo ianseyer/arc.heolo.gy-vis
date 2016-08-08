@@ -2,12 +2,12 @@ import numpy as np
 from py2neo import Node, Relationship, Graph
 
 #A neo4j node, but with 3d coordinates
-class 3dNode(Node):
+class ThreeNode(Node):
 	coords = np.array
-	def __init__(self, x, y, *args, **kwargs):
+	def __init__(self, x, y, z, *args, **kwargs):
 		try:
 			super(self.__class__, self).__init__(*args, **kwargs)
-			self.coords = np.array([x,y])
+			self.coords = np.array([x,y,z])
 		except Exception as e:
 			raise e
 
