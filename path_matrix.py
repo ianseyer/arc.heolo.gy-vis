@@ -16,8 +16,8 @@ except Exception as e:
 
 def digest_path(path):
     """
-    Digests a JSON path returned from a Neo4J query into an nparray of Node IDs
-    @returns [node_array, relationship_array]
+    Digests a JSON path returned from a Neo4j query into an nparray of Node and Relationship ids
+    @returns {"nodes":node_array, "relationships":relationship_array}
     """
     node_path = np.array([])
     relationship_path = np.array([])
@@ -34,6 +34,10 @@ def digest_path(path):
     return {"nodes":node_path, "relationships":relationship_path}
 
 class PathMatrix:
+    """
+    A rudimentary adjacency list storing both Nodes and Paths between them.
+    https://en.wikipedia.org/wiki/Adjacency_list
+    """
     NODE_MASTERGRID = np.array([])
     RELATIONSHIP_MASTERGRID = np.array([]) #this is a "hidden" matrix that stores relationship information between nodes
     BEGINNING_NODE = None
@@ -46,3 +50,46 @@ class PathMatrix:
         #grab first and last node from the query, extract the ID from the url, and then fetch from the graph
         self.BEGINNING_NODE = GRAPH.node(int(paths[0].nodes[0].split("/data/node/")[1]))
         self.END_NODE =       GRAPH.node(int(paths[0].nodes[-1].split("/data/node/")[1]))
+
+    def num_paths(self):
+        return len(self.NODE_MASTERGRID) #returns the number of rows (paths)
+
+    def get_longest_path(self):
+        """
+        Returns a list containing the longest path(s)
+        """
+        longest = [[]]
+        for path in self.NODE_MASTERGRID:
+            if len(path) > len(longest[0]):
+                longest = [path]
+            if len(path) == len(longest[0]):
+                longest.append(path)
+        return longest
+
+    def get_longest_path_length(self):
+        """
+        Returns the length of the longest path(s)
+        """
+        return len(self.get_longest_path[0])
+
+    def compress(self):
+        """
+        This method is responsible for collapsing shared pathways and removing duplicate nodes in a path matrix.
+        E.g. if there exist two paths:
+          [
+            [1,2,3,4],
+            [1,5,3,4]
+          ]
+        Then we should collapse the resultant to:
+        [
+            [1,[2,5],3,4]
+        ]
+
+        Method:
+        1. Find the longest unique paths
+        2. Now, find all smaller paths that are subpaths of them
+        3. Add the path to the array at it's shared index
+
+        More discussion here: https://gist.github.com/ianseyer/cb9ef79aecb2ddceef34fc3671804dec
+        """
+        
