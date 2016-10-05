@@ -4,20 +4,21 @@
 // Email    : chr@alum.mit.edu
 // Date     : August 30th 2011
 
+// #include "config.hh"
 #include "voro++.hh"
 using namespace voro;
 
 // Set up constants for the container geometry
-const double x_min=-1,x_max=1;
-const double y_min=-1,y_max=1;
-const double z_min=-1,z_max=1;
+const double x_min=-10,x_max=10;
+const double y_min=-10,y_max=10;
+const double z_min=-10,z_max=10;
 const double cvol=(x_max-x_min)*(y_max-y_min)*(x_max-x_min);
 
 // Set up the number of blocks that the container is divided into
 const int n_x=6,n_y=6,n_z=6;
 
 // Set the number of particles that are going to be randomly introduced
-const int particles=20;
+const int particles=3;
 
 // This function returns a random double between 0 and 1
 double rnd() {return double(rand())/RAND_MAX;}
@@ -51,4 +52,6 @@ int main() {
 
        // Output the Voronoi cells in gnuplot format
        con.draw_cells_gnuplot("random_points_v.gnu");
+       con.draw_particles_pov("pack_ten_cube_p.pov");
+       con.draw_cells_pov("pack_ten_cube_v.pov");
 }
